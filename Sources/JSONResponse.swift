@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-internal class Injector {
-    var credentials: CredentialsSource!
-    var apiKey: String!
-    var fetch: NetworkFetch!
+import Foundation
+
+struct JSONResponse {
+    let data: Data
     
-    static let injector = Injector()
-    
-    func inject(into: AnyObject) {
-        if var consumer = into as? FetchConsumer {
-            consumer.fetch = fetch
+    func parse<T: RemoteModel>() -> T? {
+        guard let normalized = normalize() else {
+            return nil
         }
         
-        if var consumer = into as? APIKeyConsumer {
-            consumer.apiKey = apiKey
-        }
+        return T(data: normalized)
     }
-}
-
-internal protocol InjectionHandler {
-    func inject(into: AnyObject)
-}
-
-internal extension InjectionHandler {
-    func inject(into: AnyObject) {
-        Injector.injector.inject(into: into)
+    
+    internal func normalize() -> Data? {
+        guard let string = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        
+        dump(string)
+        return string.data(using: .utf8)
     }
 }

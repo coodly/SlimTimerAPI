@@ -14,15 +14,37 @@
  * limitations under the License.
  */
 
+import Foundation
+
+private let LoginPath = "/users/token"
+
 internal class LoginRequest: NetworkRequest {
     private let email: String
     private let password: String
+    
     init(email: String, password: String) {
         self.email = email
         self.password = password
     }
     
     override func performRequest() {
+        POST(LoginPath, body: LoginRequestBody(email: email, password: password))
+    }
+}
+
+private typealias Dependencies = APIKeyConsumer
+
+internal class LoginRequestBody: RequestBody, Dependencies {
+    var apiKey: String!
+    
+    private let user: User
+    init(email: String, password: String) {
+        user = User(email: email, password: password)
+    }
+}
+
+internal struct LoginResponse: RemoteModel {
+    init?(data: Data) {
         
     }
 }

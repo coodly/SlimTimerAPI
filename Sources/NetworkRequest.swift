@@ -14,26 +14,64 @@
  * limitations under the License.
  */
 
+import Foundation
+
 private enum Method: String {
     case POST
     case GET
 }
 
+
+private let ServerAPIURLString = "http://slimtimer.com"
+
 private typealias Dependencies = FetchConsumer
 
-internal class NetworkRequest: Dependencies {
+internal class NetworkRequest: Dependencies, InjectionHandler {
     var fetch: NetworkFetch!
     
     final func execute() {
         performRequest()
     }
 
-    func POST(_ path: String, parameters: [String: AnyObject]? = nil) {
-        executeMethod(.POST, path: path, parameters: parameters)
+    func POST(_ path: String, body: RequestBody) {
+        executeMethod(.POST, path: path, body: body)
     }
     
-    private func executeMethod(_ method: Method, path: String, parameters: [String: AnyObject]?) {
+    private func executeMethod(_ method: Method, path: String, body: RequestBody?) {
+        inject(into: body as AnyObject)
         
+        var components = URLComponents(url: URL(string: ServerAPIURLString)!, resolvingAgainstBaseURL: true)!
+        components.path = components.path + path
+        
+        let requestURL = components.url!
+        let request = NSMutableURLRequest(url: requestURL)
+        request.httpMethod = method.rawValue
+        
+        Logging.log("\(method) to \(requestURL.absoluteString)")
+
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if let data = body?.generate().data(using: .utf8) {
+            request.httpBody = data
+            request.addValue("application/xml", forHTTPHeaderField: "Content-Type")
+        }
+        
+        fetch.fetch(request: request as URLRequest) {
+            data, response, error in
+            
+            if let data = data {
+                Logging.log("Response: \(String(data: data, encoding: .utf8) ?? "-")")
+                
+            } else if let error = error {
+                self.handle(error: error)
+            } else {
+                fatalError()
+            }
+        }
+    }
+    
+    func handle(error: Error) {
+        Logging.log("Handle error \(error)")
     }
     
     func performRequest() {
