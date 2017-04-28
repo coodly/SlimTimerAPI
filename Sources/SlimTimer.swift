@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-public class SlimTimer {
+public enum LoginResult {
+    case success
+    case failure(Error?)
+}
+
+public class SlimTimer: InjectionHandler {
+    public var isLoggedIn: Bool {
+        return Injector.injector.credentials.accessToken != nil
+    }
     
+    public init(key: String, credentials: CredentialsSource, fetch: NetworkFetch) {
+        Injector.injector.apiKey = key
+        Injector.injector.credentials = credentials
+        Injector.injector.fetch = fetch
+    }
+    
+    public func authenticate(_ email: String, password: String, completion: ((LoginResult) -> ())) {
+        Logging.log("Perform login")
+        
+        let request = LoginRequest(email: email, password: password)
+        inject(into: request)
+        request.execute()
+    }
 }
