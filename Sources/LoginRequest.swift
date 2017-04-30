@@ -16,11 +16,21 @@
 
 import Foundation
 
+public enum LoginResult {
+    case success
+    case failure(SlimTimerError)
+}
+
 private let LoginPath = "/users/token"
 
-internal class LoginRequest: NetworkRequest {
+private typealias RequestDependencies = CredentialsConsumer
+
+internal class LoginRequest: NetworkRequest<LoginResponse>, RequestDependencies {
+    var credentials: CredentialsSource!
+    
     private let email: String
     private let password: String
+    var resultHandler: ((LoginResult) -> ())!
     
     init(email: String, password: String) {
         self.email = email
@@ -29,6 +39,16 @@ internal class LoginRequest: NetworkRequest {
     
     override func performRequest() {
         POST(LoginPath, body: LoginRequestBody(email: email, password: password))
+    }
+    
+    override func handle(success response: LoginResponse) {
+        credentials.accessToken = response.token
+        credentials.userId = response.userId
+        resultHandler(.success)
+    }
+    
+    override func handle(error: SlimTimerError) {
+        resultHandler(.failure(error))
     }
 }
 
@@ -44,7 +64,22 @@ internal class LoginRequestBody: RequestBody, Dependencies {
 }
 
 internal struct LoginResponse: RemoteModel {
-    init?(data: Data) {
+    let userId: Int
+    let token: String
+    init?(yaml: AnyObject) {
+        guard let body = yaml as? [String: AnyObject] else {
+            return nil
+        }
         
+        guard let token = body.string(for: "access_token") else {
+            return nil
+        }
+        
+        guard let user = body.int(for: "user_id") else {
+            return nil
+        }
+        
+        self.token = token
+        self.userId = user
     }
 }

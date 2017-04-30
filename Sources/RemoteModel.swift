@@ -17,5 +17,5 @@
 import Foundation
 
 protocol RemoteModel {
-    init?(data: Data)
+    init?(yaml: AnyObject)
 }

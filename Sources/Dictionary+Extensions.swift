@@ -16,23 +16,32 @@
 
 import Foundation
 
-struct JSONResponse {
-    let data: Data
-    
-    func parse<T: RemoteModel>() -> T? {
-        guard let normalized = normalize() else {
-            return nil
-        }
-        
-        return T(data: normalized)
+extension Dictionary {
+    func string(for key: String) -> String? {
+        let dict = self as NSDictionary
+        return dict[key] as? String
     }
     
-    internal func normalize() -> Data? {
-        guard let string = String(data: data, encoding: .utf8) else {
-            return nil
+    func int(for key: String) -> Int? {
+        let dict = self as NSDictionary
+        let value = dict[key]
+        
+        if let number = value as? Int {
+            return number
         }
         
-        dump(string)
-        return string.data(using: .utf8)
+        if let string = value as? String, let number = Int(string) {
+            return number
+        }
+        
+        return nil
+    }
+    
+    func containsError() -> Bool {
+        return errorMessage() != nil
+    }
+    
+    func errorMessage() -> String? {
+        return string(for: ":error")
     }
 }

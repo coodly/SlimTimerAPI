@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-public enum LoginResult {
-    case success
-    case failure(Error?)
-}
-
 public class SlimTimer: InjectionHandler {
     public var isLoggedIn: Bool {
-        return Injector.injector.credentials.accessToken != nil
+        let credentials = Injector.injector.credentials
+        return credentials?.accessToken != nil && credentials?.userId != nil
     }
     
     public init(key: String, credentials: CredentialsSource, fetch: NetworkFetch) {
@@ -30,10 +26,11 @@ public class SlimTimer: InjectionHandler {
         Injector.injector.fetch = fetch
     }
     
-    public func authenticate(_ email: String, password: String, completion: ((LoginResult) -> ())) {
+    public func authenticate(_ email: String, password: String, completion: @escaping ((LoginResult) -> ())) {
         Logging.log("Perform login")
         
         let request = LoginRequest(email: email, password: password)
+        request.resultHandler = completion
         inject(into: request)
         request.execute()
     }

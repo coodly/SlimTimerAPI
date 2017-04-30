@@ -29,6 +29,10 @@ internal class Injector {
         if var consumer = into as? APIKeyConsumer {
             consumer.apiKey = apiKey
         }
+        
+        if var consumer = into as? CredentialsConsumer {
+            consumer.credentials = credentials
+        }
     }
 }
 

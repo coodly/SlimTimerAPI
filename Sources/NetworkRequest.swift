@@ -22,11 +22,17 @@ private enum Method: String {
 }
 
 
+public enum SlimTimerError: Error {
+    case noData
+    case network(Error)
+    case server(String)
+}
+
 private let ServerAPIURLString = "http://slimtimer.com"
 
 private typealias Dependencies = FetchConsumer
 
-internal class NetworkRequest: Dependencies, InjectionHandler {
+internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandler {
     var fetch: NetworkFetch!
     
     final func execute() {
@@ -49,7 +55,7 @@ internal class NetworkRequest: Dependencies, InjectionHandler {
         
         Logging.log("\(method) to \(requestURL.absoluteString)")
 
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/x-yaml", forHTTPHeaderField: "Accept")
         
         if let data = body?.generate().data(using: .utf8) {
             request.httpBody = data
@@ -59,18 +65,36 @@ internal class NetworkRequest: Dependencies, InjectionHandler {
         fetch.fetch(request: request as URLRequest) {
             data, response, error in
             
-            if let data = data {
-                Logging.log("Response: \(String(data: data, encoding: .utf8) ?? "-")")
-                
-            } else if let error = error {
-                self.handle(error: error)
-            } else {
-                fatalError()
+            if let error = error {
+                self.handle(error: .network(error))
+                return
             }
+            
+            guard let data = data, let body = YAMLResponse(data: data).parse() else {
+                self.handle(error: .noData)
+                return
+            }
+            
+            if let dict = body as? [String: AnyObject], let errorMessage = dict.errorMessage() {
+                self.handle(error: .server(errorMessage))
+                return
+            }
+            
+            Logging.log("Response:\n\(String(data: data, encoding: .utf8) ?? "-")")
+            guard let result = Model(yaml: body) else {
+                self.handle(error: .noData)
+                return
+            }
+            
+            self.handle(success: result)
         }
     }
     
-    func handle(error: Error) {
+    func handle(success model: Model) {
+        Logging.log("Handle success \(model)")
+    }
+    
+    func handle(error: SlimTimerError) {
         Logging.log("Handle error \(error)")
     }
     
