@@ -18,6 +18,15 @@ import XCTest
 @testable import SlimTimerAPI
 
 class YAMLResponseTests: XCTestCase {
+    func testWithoutYAMLStartMarker() {
+        let input = [
+            "cake: 12",
+            "mini: me",
+        ].joined(separator: "\n")
+        
+        XCTAssertNil(YAMLResponse(data: input.data(using: .utf8)!).parse())
+    }
+    
     func testDictAtRoot() {
         let input = [
             "---",

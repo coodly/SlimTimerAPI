@@ -28,12 +28,26 @@ internal struct YAMLResponse {
         
         var result = [String: AnyObject]()
         
-        let lines = string.components(separatedBy: .newlines)
-        for line in lines {
-            if line == DocumentStartMarker {
-                continue
-            }
-            
+        let lines = Array(string.components(separatedBy: .newlines)).filter({ $0.characters.count > 0 })
+        guard lines.count > 0 else {
+            Logging.log("No line in YAML response")
+            return nil
+        }
+
+        let first = lines[0]
+        guard first == DocumentStartMarker else {
+            Logging.log("Did not start with YAML marker")
+            return nil
+        }
+        
+        let content = lines.suffix(from: 1)
+
+        guard content.count > 0 else {
+            Logging.log("No content lines")
+            return nil
+        }
+        
+        for line in content {
             guard let range = line.range(of: ": ") else {
                 continue
             }
