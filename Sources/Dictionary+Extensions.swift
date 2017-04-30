@@ -16,6 +16,15 @@
 
 import Foundation
 
+@available(OSX 10.12, iOS 10.0, *)
+private extension ISO8601DateFormatter {
+    static let slimTimerDateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate, .withSpaceBetweenDateAndTime, .withFullTime]
+        return formatter
+    }()
+}
+
 extension Dictionary {
     func string(for key: String) -> String? {
         let dict = self as NSDictionary
@@ -35,6 +44,39 @@ extension Dictionary {
         }
         
         return nil
+    }
+    
+    func bool(for key: String) -> Bool? {
+        let dict = self as NSDictionary
+        let value = dict[key]
+        
+        if let bool = value as? Bool {
+            return bool
+        }
+        
+        if let string = value as? String, let bool = Bool(string) {
+            return bool
+        }
+        
+        return nil
+    }
+    
+    func date(for key: String) -> Date? {
+        let dict = self as NSDictionary
+        guard var string = dict[key] as? String else {
+            return nil
+        }
+        
+        if let index = string.range(of: ".", options: [.backwards]) {
+            string = string.substring(to: index.lowerBound)
+            string.append("+0000")
+        }
+        
+        if #available(OSX 10.12, iOS 10.0, *) {
+            return ISO8601DateFormatter.slimTimerDateFormatter.date(from: string)
+        } else {
+            fatalError()
+        }
     }
     
     func containsError() -> Bool {

@@ -23,11 +23,7 @@ public enum LoginResult {
 
 private let LoginPath = "/users/token"
 
-private typealias RequestDependencies = CredentialsConsumer
-
-internal class LoginRequest: NetworkRequest<LoginResponse>, RequestDependencies {
-    var credentials: CredentialsSource!
-    
+internal class LoginRequest: NetworkRequest<LoginResponse> {
     private let email: String
     private let password: String
     var resultHandler: ((LoginResult) -> ())!

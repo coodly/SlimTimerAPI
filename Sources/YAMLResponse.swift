@@ -16,6 +16,8 @@
 
 import Foundation
 
+private let DocumentStartMarker = "---"
+
 internal struct YAMLResponse {
     let data: Data
     
@@ -28,7 +30,7 @@ internal struct YAMLResponse {
         
         let lines = string.components(separatedBy: .newlines)
         for line in lines {
-            if line == "---" {
+            if line == DocumentStartMarker {
                 continue
             }
             

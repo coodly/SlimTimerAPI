@@ -25,12 +25,24 @@ public class SlimTimer: InjectionHandler {
         Injector.injector.credentials = credentials
         Injector.injector.fetch = fetch
     }
-    
+}
+
+public extension SlimTimer { // MARK: authenticate
     public func authenticate(_ email: String, password: String, completion: @escaping ((LoginResult) -> ())) {
         Logging.log("Perform login")
         
         let request = LoginRequest(email: email, password: password)
         request.resultHandler = completion
+        inject(into: request)
+        request.execute()
+    }
+}
+
+public extension SlimTimer { // MARK: tasks
+    public func fetchTasks() {
+        Logging.log("Fetch tasks")
+        
+        let request = ListTasksRequest()
         inject(into: request)
         request.execute()
     }

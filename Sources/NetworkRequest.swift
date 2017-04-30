@@ -30,13 +30,19 @@ public enum SlimTimerError: Error {
 
 private let ServerAPIURLString = "http://slimtimer.com"
 
-private typealias Dependencies = FetchConsumer
+private typealias Dependencies = FetchConsumer & CredentialsConsumer
 
-internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandler {
+internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandler, APIKeyConsumer {
     var fetch: NetworkFetch!
+    var credentials: CredentialsSource!
+    var apiKey: String!
     
     final func execute() {
         performRequest()
+    }
+
+    func GET(_ path: String) {
+        executeMethod(.GET, path: path, body: nil)
     }
 
     func POST(_ path: String, body: RequestBody) {
@@ -48,6 +54,15 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandle
         
         var components = URLComponents(url: URL(string: ServerAPIURLString)!, resolvingAgainstBaseURL: true)!
         components.path = components.path + path
+        
+        if self is AuthenticatedRequest {
+            var queryItems = [URLQueryItem]()
+            
+            queryItems.append(URLQueryItem(name: "api_key", value: apiKey))
+            queryItems.append(URLQueryItem(name: "access_token", value: credentials.accessToken!))
+            
+            components.queryItems = queryItems
+        }
         
         let requestURL = components.url!
         let request = NSMutableURLRequest(url: requestURL)
