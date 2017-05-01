@@ -28,7 +28,15 @@ private extension ISO8601DateFormatter {
 extension Dictionary {
     func string(for key: String) -> String? {
         let dict = self as NSDictionary
-        return dict[key] as? String
+        guard let value = dict[key] as? String else {
+            return nil
+        }
+        
+        if value == "\"\"" {
+            return ""
+        }
+        
+        return value
     }
     
     func int(for key: String) -> Int? {
