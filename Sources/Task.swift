@@ -17,13 +17,13 @@
 import Foundation
 
 public struct Task {
-    let name: String
-    let createdAt: Date
-    let completedOn: Date?
-    let updatedAt: Date
-    let tags: [String]
-    let id: Int
-    let hours: Double
+    public let name: String
+    public let createdAt: Date
+    public let completedOn: Date?
+    public let updatedAt: Date
+    public let tags: [String]
+    public let id: Int
+    public let hours: Double
 }
 
 extension Task: RemoteModel {
