@@ -16,22 +16,41 @@
 
 import Foundation
 
+private let MaxTasksPerPage = 50
+
+public enum ListTasksResult {
+    case success([Task], Bool, Int)
+    case failure(SlimTimerError)
+}
+
 private let ListTasksPathBase = "/users/%@/tasks"
 
-internal class ListTasksRequest: NetworkRequest<RemoteTask>, AuthenticatedRequest {
+internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest {
+    var resultHandler: ((ListTasksResult) -> Void)!
+    
+    private let offset: Int
+    init(offset: Int) {
+        self.offset = offset
+    }
+    
     override func performRequest() {
         let path = String(format: ListTasksPathBase, NSNumber(value: credentials.userId!))
         
-        GET(path)
+        GET(path, params: ["offset": offset as AnyObject])
     }
     
-    override func handle(result: NetworkResult<RemoteTask>) {
-        dump(result)
-    }
-}
-
-internal struct RemoteTask: RemoteModel {
-    init?(yaml: AnyObject) {
+    override func handle(result: NetworkResult<Task>) {
+        if let error = result.error {
+            resultHandler(.failure(error))
+            return
+        }
         
+        guard let tasks = result.values else {
+            resultHandler(.failure(.unknown))
+            return
+        }
+        
+        let hasMore = tasks.count == MaxTasksPerPage
+        resultHandler(.success(tasks, hasMore, hasMore ? offset + MaxTasksPerPage : 0))
     }
 }

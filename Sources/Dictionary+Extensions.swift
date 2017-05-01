@@ -87,6 +87,14 @@ extension Dictionary {
         }
     }
     
+    func double(for key: String) -> Double? {
+        guard let value = string(for: key) else {
+            return nil
+        }
+        
+        return Double(value)
+    }
+    
     func containsError() -> Bool {
         return errorMessage() != nil
     }

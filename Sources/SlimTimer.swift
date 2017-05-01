@@ -39,10 +39,11 @@ public extension SlimTimer { // MARK: authenticate
 }
 
 public extension SlimTimer { // MARK: tasks
-    public func fetchTasks() {
+    public func fetchTasks(offset: Int = 0, completion: @escaping ((ListTasksResult) -> Void)) {
         Logging.log("Fetch tasks")
         
-        let request = ListTasksRequest()
+        let request = ListTasksRequest(offset: offset)
+        request.resultHandler = completion
         inject(into: request)
         request.execute()
     }

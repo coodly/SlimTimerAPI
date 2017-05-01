@@ -51,28 +51,38 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandle
         performRequest()
     }
 
-    func GET(_ path: String) {
-        executeMethod(.GET, path: path, body: nil)
+    func GET(_ path: String, params: [String: AnyObject]? = nil) {
+        executeMethod(.GET, path: path, body: nil, params: params)
     }
 
     func POST(_ path: String, body: RequestBody) {
         executeMethod(.POST, path: path, body: body)
     }
     
-    private func executeMethod(_ method: Method, path: String, body: RequestBody?) {
+    private func executeMethod(_ method: Method, path: String, body: RequestBody?, params: [String: AnyObject]? = nil) {
         inject(into: body as AnyObject)
         
         var components = URLComponents(url: URL(string: ServerAPIURLString)!, resolvingAgainstBaseURL: true)!
         components.path = components.path + path
+
+        var queryItems = [URLQueryItem]()
+        
         
         if self is AuthenticatedRequest {
-            var queryItems = [URLQueryItem]()
-            
             queryItems.append(URLQueryItem(name: "api_key", value: apiKey))
             queryItems.append(URLQueryItem(name: "access_token", value: credentials.accessToken!))
-            
-            components.queryItems = queryItems
         }
+        
+        if let params = params {
+            for (key, value) in params {
+                if let number = value as? Int {
+                    let used = String(describing: number)
+                    queryItems.append(URLQueryItem(name: key, value: used))
+                }
+            }
+        }
+        
+        components.queryItems = queryItems
         
         let requestURL = components.url!
         let request = NSMutableURLRequest(url: requestURL)
