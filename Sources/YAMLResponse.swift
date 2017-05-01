@@ -54,7 +54,24 @@ internal struct YAMLResponse {
         let sections = content.sections()
         
         for section in sections {
-            result.append(section.dict())
+            var sectionValues = [String: AnyObject]()
+            
+            var processed = section
+            while processed.containsSubItems() {
+                let sub = processed.extractSubItem()
+                
+                for (key, value) in sub.sub {
+                    sectionValues[key] = value
+                }
+                
+                processed = sub.remaining
+            }
+            
+            let remaining = processed.dict()
+            for (key, value) in remaining {
+                sectionValues[key] = value
+            }
+            result.append(sectionValues)
         }
         
         return result as AnyObject

@@ -106,21 +106,21 @@ class YAMLResponseTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(4, first.count)
-        XCTAssertEqual(4, second.count)
+        XCTAssertEqual(5, first.count)
+        XCTAssertEqual(5, second.count)
         
         XCTAssertEqual(true, second.bool(for: "level_one"))
         XCTAssertEqual(13, second.int(for: "variable"))
         XCTAssertEqual("good", second.string(for: "cakes"))
         XCTAssertEqual("Nothing to see here", second.string(for: "more"))
         
-        guard let sub = second["level_2"] as? [String: AnyObject] else {
+        guard let sub = second["level_2"] as? [[String: AnyObject]], let checked = sub.first else {
             XCTAssertFalse(true)
             return
         }
         
-        XCTAssertEqual(true, sub.bool(for: "subbed"))
-        XCTAssertEqual("attic", sub.string(for: "basement"))
+        XCTAssertEqual(true, checked.bool(for: "subbed"))
+        XCTAssertEqual("attic", checked.string(for: "basement"))
     }
     
     func testHaveEmptyChildValue() {
