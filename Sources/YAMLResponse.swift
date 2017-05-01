@@ -34,7 +34,7 @@ internal struct YAMLResponse {
         }
 
         let first = lines[0]
-        guard first == DocumentStartMarker else {
+        guard first.hasPrefix(DocumentStartMarker) else {
             Logging.log("Did not start with YAML marker")
             return nil
         }

@@ -24,6 +24,10 @@ internal class ListTasksRequest: NetworkRequest<RemoteTask>, AuthenticatedReques
         
         GET(path)
     }
+    
+    override func handle(result: NetworkResult<RemoteTask>) {
+        dump(result)
+    }
 }
 
 internal struct RemoteTask: RemoteModel {

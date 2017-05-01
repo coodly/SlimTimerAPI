@@ -26,6 +26,16 @@ public enum SlimTimerError: Error {
     case noData
     case network(Error)
     case server(String)
+    case unknown
+}
+
+internal struct NetworkResult<T: RemoteModel> {
+    var value: T? {
+        return values?.first
+    }
+    
+    let values: [T]?
+    let error: SlimTimerError?
 }
 
 private let ServerAPIURLString = "http://slimtimer.com"
@@ -78,39 +88,46 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandle
         }
         
         fetch.fetch(request: request as URLRequest) {
-            data, response, error in
+            data, response, networkError in
             
-            if let error = error {
-                self.handle(error: .network(error))
+            if let data = data, let string = String(data: data, encoding: .utf8) {
+                Logging.log("Response:\n\(string)")
+            }
+            
+            var values: [Model]?
+            var error: SlimTimerError?
+            
+            defer {
+                self.handle(result: NetworkResult(values: values, error: error))
+            }
+            
+            if let remoteError = networkError  {
+                error = .network(remoteError)
                 return
             }
             
             guard let data = data, let body = YAMLResponse(data: data).parse() else {
-                self.handle(error: .noData)
+                error = .noData
                 return
             }
             
             if let dict = body as? [String: AnyObject], let errorMessage = dict.errorMessage() {
-                self.handle(error: .server(errorMessage))
+                error = .server(errorMessage)
                 return
             }
             
-            Logging.log("Response:\n\(String(data: data, encoding: .utf8) ?? "-")")
-            guard let result = Model(yaml: body) else {
-                self.handle(error: .noData)
-                return
+            if let dict = body as? [String: AnyObject], let value = Model(yaml: dict as AnyObject) {
+                values = [value]
+            } else if let array = body as? [[String: AnyObject]] {
+                values = array.flatMap({ Model(yaml: $0 as AnyObject) })
+            } else {
+                error = .noData
             }
-            
-            self.handle(success: result)
         }
     }
     
-    func handle(success model: Model) {
-        Logging.log("Handle success \(model)")
-    }
-    
-    func handle(error: SlimTimerError) {
-        Logging.log("Handle error \(error)")
+    func handle(result: NetworkResult<Model>) {
+        Logging.log("Handle \(result)")
     }
     
     func performRequest() {

@@ -37,14 +37,20 @@ internal class LoginRequest: NetworkRequest<LoginResponse> {
         POST(LoginPath, body: LoginRequestBody(email: email, password: password))
     }
     
-    override func handle(success response: LoginResponse) {
-        credentials.accessToken = response.token
-        credentials.userId = response.userId
+    override func handle(result: NetworkResult<LoginResponse>) {
+        if let error = result.error {
+            resultHandler(.failure(error))
+            return
+        }
+        
+        guard let login = result.value else {
+            resultHandler(.failure(.unknown))
+            return
+        }
+        
+        credentials.accessToken = login.token
+        credentials.userId = login.userId
         resultHandler(.success)
-    }
-    
-    override func handle(error: SlimTimerError) {
-        resultHandler(.failure(error))
     }
 }
 
