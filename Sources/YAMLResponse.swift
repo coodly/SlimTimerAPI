@@ -16,8 +16,8 @@
 
 import Foundation
 
-private let DocumentStartMarker = "---"
-private let DictMarker = "- "
+internal let DocumentStartMarker = "---"
+internal let DictMarker = "- "
 
 internal struct YAMLResponse {
     let data: Data
@@ -58,51 +58,5 @@ internal struct YAMLResponse {
         }
         
         return result as AnyObject
-    }
-}
-
-private extension Array where Iterator.Element == String {
-    func dict() -> [String: AnyObject] {
-        var result = [String: AnyObject]()
-
-        for line in self {
-            guard let range = line.range(of: ": ") else {
-                continue
-            }
-            
-            let key = line.substring(to: range.lowerBound).trimmingCharacters(in: .whitespaces)
-            let value = line.substring(from: range.upperBound)
-            
-            result[key] = value as AnyObject
-        }
-        
-        return result
-    }
-    
-    func sections() -> [[String]] {
-        var result = [[String]]()
-        
-        var working: [String]? = nil
-        for line in self {
-            if line.hasPrefix(DictMarker) {
-                if let previous = working {
-                    result.append(previous)
-                }
-                
-                working = []
-                
-                //remove the marker from key
-                let modified = line.replacingOccurrences(of: DictMarker, with: "  ")
-                working?.append(modified)
-            } else {
-                working?.append(line)
-            }
-        }
-
-        if let previous = working {
-            result.append(previous)
-        }
-        
-        return result
     }
 }
