@@ -38,4 +38,27 @@ class ArrayYAMLTests: XCTestCase {
         
         XCTAssertTrue(lines.containsSubItems())
     }
+
+    func testExtractSubItem() {
+        let lines = [
+            "  movies:",
+            "  - title: In the woods",
+            "    genre: Comedy",
+            "  - title: Fake cake",
+            "    genre: Drama",
+            "  name: cake",
+            "  place: fake"
+        ]
+        
+        let extract = lines.extractSubItem()
+        
+        XCTAssertEqual(2, extract.remaining.count)
+        
+        guard let movies = extract.sub["movies"] as? [[String: AnyObject]] else {
+            XCTAssertFalse(true)
+            return
+        }
+        
+        XCTAssertEqual(2, movies.count)
+    }
 }

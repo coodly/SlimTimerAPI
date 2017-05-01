@@ -38,7 +38,12 @@ internal extension Array where Iterator.Element == String {
         var result = [[String]]()
         
         var working: [String]? = nil
-        for line in self {
+        
+        let indent = self.first!.characters.prefix(while: { $0 == " " }).count
+        
+        let processed = self.map({ $0.substring(from: $0.index($0.startIndex, offsetBy: indent)) })
+        
+        for line in processed {
             if line.hasPrefix(DictMarker) {
                 if let previous = working {
                     result.append(previous)
@@ -59,6 +64,39 @@ internal extension Array where Iterator.Element == String {
         }
         
         return result
+    }
+    
+    typealias  ExtractedSub = (sub: [String: AnyObject], remaining: [String])
+    func extractSubItem() -> (ExtractedSub) {
+        guard let subStartIndex = self.index(where: { $0.trimmingCharacters(in: .whitespaces).hasPrefix(DictMarker) }) else {
+            return ([:], self)
+        }
+        
+        let subKeyIndex = subStartIndex.advanced(by: -1)
+        let indent = String(self[subKeyIndex].characters.prefix(while: { $0 == " " }))
+        var subEndIndex = subKeyIndex
+
+        let subStartMarker = "\(indent)- "
+        let subLineMarker = "\(indent)  "
+        
+        let afterKey = self.suffix(from: subStartIndex)
+        for line in afterKey {
+            if line.hasPrefix(subStartMarker) || line.hasPrefix(subLineMarker) {
+                subEndIndex = subEndIndex.advanced(by: 1)
+                
+                continue
+            }
+            break
+        }
+        
+        var remaining = Array(self)
+        remaining.removeSubrange(subKeyIndex...subEndIndex)
+        
+        let subLines = Array(self[subKeyIndex...subEndIndex]).sections()
+        let key = self[subKeyIndex].trimmingCharacters(in: CharacterSet(charactersIn: " :"))
+        let sub = [key: subLines.map({ $0.dict() }) as AnyObject]
+        
+        return (sub, remaining)
     }
     
     func containsSubItems() -> Bool {
