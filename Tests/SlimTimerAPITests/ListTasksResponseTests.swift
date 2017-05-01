@@ -20,6 +20,7 @@ import XCTest
 class ListTasksResponseTests: XCTestCase {
     func testSingleTaskInResponse() {
         let success = [
+            "---",
             "- coworkers: []",
             "",
             "  name: Review apps",
