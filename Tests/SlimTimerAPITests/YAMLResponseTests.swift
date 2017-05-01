@@ -136,8 +136,12 @@ class YAMLResponseTests: XCTestCase {
             return
         }
         
-        XCTAssertEqual(1, checked.count)
-        XCTAssertNil(checked["coworkers"])
+        XCTAssertEqual(2, checked.count)
+        if let array = checked["coworkers"] as? [AnyObject] {
+            XCTAssertEqual(0, array.count)
+        } else {
+            XCTAssertFalse(true)
+        }
         XCTAssertEqual("Review apps", checked.string(for: "name"))
     }
     

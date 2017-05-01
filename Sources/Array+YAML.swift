@@ -26,9 +26,15 @@ internal extension Array where Iterator.Element == String {
             }
             
             let key = line.substring(to: range.lowerBound).trimmingCharacters(in: .whitespaces)
-            let value = line.substring(from: range.upperBound)
+            var value: AnyObject
+            let string = line.substring(from: range.upperBound)
+            if string == "[]" {
+                value = [] as AnyObject
+            } else {
+                value = string as AnyObject
+            }
             
-            result[key] = value as AnyObject
+            result[key] = value
         }
         
         return result
