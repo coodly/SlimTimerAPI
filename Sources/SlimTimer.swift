@@ -27,6 +27,12 @@ public class SlimTimer: InjectionHandler {
     }
 }
 
+public extension SlimTimer { // MARK: user details
+    func loggedInUserId() -> Int? {
+        return Injector.injector.credentials.userId
+    }
+}
+
 public extension SlimTimer { // MARK: authenticate
     public func authenticate(_ email: String, password: String, completion: @escaping ((LoginResult) -> ())) {
         Logging.log("Perform login")
