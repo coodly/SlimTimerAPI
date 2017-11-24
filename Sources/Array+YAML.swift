@@ -45,7 +45,7 @@ internal extension Array where Iterator.Element == String {
         
         var working: [String]? = nil
         
-        let indent = self.first!.characters.prefix(while: { $0 == " " }).count
+        let indent = self.first!.prefix(while: { $0 == " " }).count
         
         let processed = self.map({ $0.substring(from: $0.index($0.startIndex, offsetBy: indent)) })
         
@@ -79,7 +79,7 @@ internal extension Array where Iterator.Element == String {
         }
         
         let subKeyIndex = subStartIndex.advanced(by: -1)
-        let indent = String(self[subKeyIndex].characters.prefix(while: { $0 == " " }))
+        let indent = String(self[subKeyIndex].prefix(while: { $0 == " " }))
         var subEndIndex = subKeyIndex
 
         let subStartMarker = "\(indent)- "
@@ -110,7 +110,7 @@ internal extension Array where Iterator.Element == String {
             return false
         }
         
-        let indent = String(firstLine.characters.prefix(while: { $0 == " " }))
+        let indent = String(firstLine.prefix(while: { $0 == " " }))
         let prefix = "\(indent)\(DictMarker)"
         for line in self {
             if line.hasPrefix(prefix) {

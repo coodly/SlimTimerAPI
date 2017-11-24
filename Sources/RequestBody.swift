@@ -67,7 +67,7 @@ internal extension RequestBody {
             result.append(XmlNode(name: normalized, value: value))
         }
         
-        return result.sorted(by: { $0.0.name < $0.1.name })
+        return result.sorted(by: { $0.name < $1.name })
     }
     
     func generate() -> String {

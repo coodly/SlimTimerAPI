@@ -27,7 +27,7 @@ internal struct YAMLResponse {
             return nil
         }
         
-        let lines = Array(string.components(separatedBy: .newlines)).filter({ $0.characters.count > 0 })
+        let lines = Array(string.components(separatedBy: .newlines)).filter({ $0.count > 0 })
         guard lines.count > 0 else {
             Logging.log("No line in YAML response")
             return nil
