@@ -25,8 +25,10 @@ public enum ListTasksResult {
 
 private let ListTasksPathBase = "/users/%@/tasks"
 
-internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest {
+internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest, UserIdConsumer {
     var resultHandler: ((ListTasksResult) -> Void)!
+    
+    var userId: Int!
     
     private let offset: Int
     init(offset: Int) {
@@ -34,7 +36,7 @@ internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest {
     }
     
     override func performRequest() {
-        let path = String(format: ListTasksPathBase, NSNumber(value: credentials.userId!))
+        let path = String(format: ListTasksPathBase, NSNumber(value: userId))
         
         GET(path, params: ["offset": offset as AnyObject])
     }

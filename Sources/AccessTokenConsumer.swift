@@ -16,6 +16,6 @@
 
 import Foundation
 
-internal protocol CredentialsConsumer {
-    var credentials: CredentialsSource! { get set }
+internal protocol AccessTokenConsumer {
+    var accessToken: String! { get set }
 }

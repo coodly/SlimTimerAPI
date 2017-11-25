@@ -17,7 +17,7 @@
 import Foundation
 
 public enum LoginResult {
-    case success
+    case success(Int, String)
     case failure(SlimTimerError)
 }
 
@@ -48,9 +48,7 @@ internal class LoginRequest: NetworkRequest<LoginResponse> {
             return
         }
         
-        credentials.accessToken = login.token
-        credentials.userId = login.userId
-        resultHandler(.success)
+        resultHandler(.success(login.userId, login.token))
     }
 }
 

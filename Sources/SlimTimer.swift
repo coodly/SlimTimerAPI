@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-public class SlimTimer: InjectionHandler {
-    public var isLoggedIn: Bool {
-        let credentials = Injector.injector.credentials
-        return credentials?.accessToken != nil && credentials?.userId != nil
-    }
+public class SlimTimer {
+    private let apiKey: String
+    private let userId: Int
+    private let userToken: String
+    private let fetch: NetworkFetch
     
-    public init(key: String, credentials: CredentialsSource, fetch: NetworkFetch) {
-        Injector.injector.apiKey = key
-        Injector.injector.credentials = credentials
-        Injector.injector.fetch = fetch
+    public init(key: String, userId: Int, userToken: String, fetch: NetworkFetch) {
+        self.apiKey = key
+        self.userId = userId
+        self.userToken = userToken
+        self.fetch = fetch
     }
-}
 
-public extension SlimTimer { // MARK: user details
-    func loggedInUserId() -> Int? {
-        return Injector.injector.credentials.userId
-    }
-}
-
-public extension SlimTimer { // MARK: authenticate
-    public func authenticate(_ email: String, password: String, completion: @escaping ((LoginResult) -> ())) {
-        Logging.log("Perform login")
+    private func inject(into: AnyObject) {
+        if var consumer = into as? FetchConsumer {
+            consumer.fetch = fetch
+        }
         
-        let request = LoginRequest(email: email, password: password)
-        request.resultHandler = completion
-        inject(into: request)
-        request.execute()
+        if var consumer = into as? APIKeyConsumer {
+            consumer.apiKey = apiKey
+        }
+        
+        if var consumer = into as? AccessTokenConsumer {
+            consumer.accessToken = userToken
+        }
+        
+        if var consumer = into as? UserIdConsumer {
+            consumer.userId = userId
+        }
     }
 }
 

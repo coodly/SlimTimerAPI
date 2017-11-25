@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-public protocol CredentialsSource {
-    var accessToken: String? { get set }
-    var userId: Int? { get set }
+import Foundation
+
+internal protocol UserIdConsumer {
+    var userId: Int! { get set }
 }

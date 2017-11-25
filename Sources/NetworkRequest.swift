@@ -40,12 +40,12 @@ internal struct NetworkResult<T: RemoteModel> {
 
 private let ServerAPIURLString = "http://slimtimer.com"
 
-private typealias Dependencies = FetchConsumer & CredentialsConsumer
+private typealias Dependencies = FetchConsumer & AccessTokenConsumer & APIKeyConsumer
 
-internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandler, APIKeyConsumer {
+internal class NetworkRequest<Model: RemoteModel>: Dependencies {
     var fetch: NetworkFetch!
-    var credentials: CredentialsSource!
     var apiKey: String!
+    var accessToken: String!
     
     final func execute() {
         performRequest()
@@ -60,7 +60,9 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandle
     }
     
     private func executeMethod(_ method: Method, path: String, body: RequestBody?, params: [String: AnyObject]? = nil) {
-        inject(into: body as AnyObject)
+        if var consumer = body as? APIKeyConsumer {
+            consumer.apiKey = apiKey
+        }
         
         var components = URLComponents(url: URL(string: ServerAPIURLString)!, resolvingAgainstBaseURL: true)!
         components.path = components.path + path
@@ -70,7 +72,7 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies, InjectionHandle
         
         if self is AuthenticatedRequest {
             queryItems.append(URLQueryItem(name: "api_key", value: apiKey))
-            queryItems.append(URLQueryItem(name: "access_token", value: credentials.accessToken!))
+            queryItems.append(URLQueryItem(name: "access_token", value: accessToken))
         }
         
         if let params = params {
