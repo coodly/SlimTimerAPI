@@ -25,4 +25,17 @@ internal extension Date {
         
         return year == components.year && month == components.month && day == components.day
     }
+    
+    static func dateOn(year: Int, month: Int, day: Int, hours: Int, minutes: Int, seconda: Int) -> Date {
+        var gregorian = Calendar(identifier: .gregorian)
+        gregorian.timeZone = TimeZone(secondsFromGMT: 0)!
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        components.hour = hours
+        components.minute = minutes
+        components.second = seconda
+        return gregorian.date(from: components)!
+    }
 }

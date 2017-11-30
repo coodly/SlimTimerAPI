@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
+import Foundation
+
 private let Heading = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 private let Normalizations = [
-    "apiKey": "api-key"
+    "apiKey": "api-key",
+    "entry": "time-entry",
+    "inProgress": "in-progress",
+    "durationInSeconds": "duration-in-seconds",
+    "taskId": "task-id",
+    "endTime": "end-time",
+    "startTime": "start-time"
 ]
+
+private extension DateFormatter {
+    static let xmlDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
+}
 
 internal struct XmlNode {
     let name: String
@@ -50,7 +67,7 @@ internal extension RequestBody {
         
         var result = [XmlNode]()
         
-        for child in mirror.children {
+        for child in mirror.children {            
             guard let name = child.label else {
                 continue
             }
@@ -59,8 +76,20 @@ internal extension RequestBody {
             let value: AnyObject
             if let body = child.value as? RequestBody {
                 value = body.asNodes() as AnyObject
+            } else if let string = child.value as? String, string.hasValue() {
+                value = string as AnyObject
+            } else if let bool = child.value as? Bool {
+                value = (bool ? "true" : "false") as AnyObject
+            } else if let number = child.value as? Int {
+                value = String(describing: number) as AnyObject
+            } else if let date = child.value as? Date {
+                if #available(OSX 10.12, iOS 10.0, *) {
+                    value = DateFormatter.xmlDateFormatter.string(from: date) as AnyObject
+                } else {
+                    fatalError()
+                }
             } else {
-                value = String(describing: child.value) as AnyObject
+                continue
             }
             
             
