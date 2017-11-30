@@ -26,6 +26,7 @@ private let Normalizations = [
     "endTime": "end-time",
     "startTime": "start-time"
 ]
+private let Filtered = ["id"]
 
 private extension DateFormatter {
     static let xmlDateFormatter: DateFormatter = {
@@ -72,6 +73,10 @@ internal extension RequestBody {
                 continue
             }
             
+            if Filtered.contains(name) {
+                continue
+            }
+            
             let normalized = Normalizations[name] ?? name
             let value: AnyObject
             if let body = child.value as? RequestBody {
@@ -83,11 +88,9 @@ internal extension RequestBody {
             } else if let number = child.value as? Int {
                 value = String(describing: number) as AnyObject
             } else if let date = child.value as? Date {
-                if #available(OSX 10.12, iOS 10.0, *) {
-                    value = DateFormatter.xmlDateFormatter.string(from: date) as AnyObject
-                } else {
-                    fatalError()
-                }
+                value = DateFormatter.xmlDateFormatter.string(from: date) as AnyObject
+            } else if let tags = child.value as? [String] {
+                value = tags.sorted().joined(separator: ",") as AnyObject
             } else {
                 continue
             }

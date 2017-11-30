@@ -22,19 +22,19 @@ public struct Entry {
     public let endTime: Date?
     public let taskId: Int
     public let tags: [String]?
-    public let comment: String?
+    public let comments: String?
     public let durationInSeconds: Int
     public let inProgress: Bool
 }
 
 public extension Entry {
-    public init(id: Int?, startTime: Date, endTime: Date?, taskId: Int, tags: [String]?, comment: String?) {
+    public init(id: Int?, startTime: Date, endTime: Date?, taskId: Int, tags: [String]?, comments: String?) {
         self.id = id
         self.startTime = startTime
         self.endTime = endTime
         self.taskId = taskId
         self.tags = tags
-        self.comment = comment
+        self.comments = comments
         self.inProgress = endTime == nil
         
         let end = endTime ?? Date()
