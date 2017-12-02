@@ -31,11 +31,7 @@ public enum SlimTimerError: Error {
 }
 
 internal struct NetworkResult<T: RemoteModel> {
-    var value: T? {
-        return values?.first
-    }
-    
-    let values: [T]?
+    var value: T?
     let error: SlimTimerError?
 }
 
@@ -107,11 +103,11 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
                 Logging.log("Response:\n\(string)")
             }
             
-            var values: [Model]?
+            var value: Model?
             var error: SlimTimerError?
             
             defer {
-                self.handle(result: NetworkResult(values: values, error: error))
+                self.handle(result: NetworkResult(value: value, error: error))
             }
             
             if let remoteError = networkError  {
@@ -131,8 +127,8 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
                 return
             }
             
-            if let value = Model(xml: xml) {
-                values = [value]
+            if let model = Model(xml: xml) {
+                value = model
             } else {
                 error = .noData
             }

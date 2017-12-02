@@ -22,7 +22,8 @@ class TaskYAMLParseTests: XCTestCase {
     func testTaskParse() {
         let text =
         """
-          <task>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <task>
             <coworkers>
             </coworkers>
             <name>Game development</name>
@@ -42,7 +43,7 @@ class TaskYAMLParseTests: XCTestCase {
             <reporters>
             </reporters>
             <hours type="float">1.02</hours>
-          </task>
+        </task>
         """
         let xml = SWXMLHash.parse(text)
         

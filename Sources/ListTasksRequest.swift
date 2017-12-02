@@ -25,7 +25,7 @@ public enum ListTasksResult {
 
 private let ListTasksPathBase = "/users/%@/tasks"
 
-internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest, UserIdConsumer {
+internal class ListTasksRequest: NetworkRequest<Tasks>, AuthenticatedRequest, UserIdConsumer {
     var resultHandler: ((ListTasksResult) -> Void)!
     
     var userId: Int!
@@ -41,13 +41,13 @@ internal class ListTasksRequest: NetworkRequest<Task>, AuthenticatedRequest, Use
         GET(path, params: ["offset": offset as AnyObject])
     }
     
-    override func handle(result: NetworkResult<Task>) {
+    override func handle(result: NetworkResult<Tasks>) {
         if let error = result.error {
             resultHandler(.failure(error))
             return
         }
         
-        guard let tasks = result.values else {
+        guard let tasks = result.value?.tasks else {
             resultHandler(.failure(.unknown))
             return
         }

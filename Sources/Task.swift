@@ -29,7 +29,14 @@ public struct Task {
 
 extension Task: RemoteModel {
     init?(xml: XMLIndexer) {
-        let task = xml["task"]
+        //TODO jaanus: figure this out
+        let task: XMLIndexer
+        switch xml["task"] {
+        case .xmlError(_):
+            task = xml
+        default:
+            task = xml["task"]
+        }
         
         guard let name = task["name"].element?.text else {
             return nil
