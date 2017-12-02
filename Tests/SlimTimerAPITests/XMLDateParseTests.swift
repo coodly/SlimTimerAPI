@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-import Foundation
+import XCTest
+@testable import SlimTimerAPI
 import SWXMLHash
 
-protocol RemoteModel {
-    init?(xml: XMLIndexer)
+class XMLDateParseTests: XCTestCase {
+    func testTaskDate() {
+        let string =
+        """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <task>
+            <created-at type="datetime">2015-03-07T13:21:04Z</created-at>
+        </task>
+        """
+        
+        let xml = SWXMLHash.parse(string)
+        
+        let task = xml["task"]
+        let createdAt = task["created-at"].element?.date
+        XCTAssertNotNil(createdAt)
+        XCTAssertTrue(createdAt?.isOn(year: 2015, month: 3, day: 7) ?? false)
+    }
 }

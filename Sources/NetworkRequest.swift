@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import SWXMLHash
 
 private enum Method: String {
     case POST
@@ -92,7 +93,7 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
         
         Logging.log("\(method) to \(requestURL.absoluteString)")
 
-        request.addValue("application/x-yaml", forHTTPHeaderField: "Accept")
+        request.addValue("application/xml", forHTTPHeaderField: "Accept")
         
         if let data = body?.generate().data(using: .utf8) {
             request.httpBody = data
@@ -118,20 +119,20 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
                 return
             }
             
-            guard let data = data, let body = YAMLResponse(data: data).parse() else {
+            guard let data = data else {
                 error = .noData
                 return
             }
+            
+            let xml = SWXMLHash.parse(data)
             
             if let dict = body as? [String: AnyObject], let errorMessage = dict.errorMessage() {
                 error = .server(errorMessage)
                 return
             }
             
-            if let dict = body as? [String: AnyObject], let value = Model(yaml: dict as AnyObject) {
+            if let value = Model(xml: xml) {
                 values = [value]
-            } else if let array = body as? [[String: AnyObject]] {
-                values = array.flatMap({ Model(yaml: $0 as AnyObject) })
             } else {
                 error = .noData
             }

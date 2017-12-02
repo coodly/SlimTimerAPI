@@ -16,17 +16,21 @@
 
 import XCTest
 @testable import SlimTimerAPI
+import SWXMLHash
 
 class LoginResponseTests: XCTestCase {
     func testSuccessResponse() {
-        let success = [
-            "---",
-            "user_id: 12",
-            "access_token: api-token-123"
-        ].joined(separator: "\n")
+        let success =
+        """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <response>
+            <user-id type="integer">12</user-id>
+            <access-token>api-token-123</access-token>
+        </response>
+        """
         
-        let response = YAMLResponse(data: success.data(using: .utf8)!).parse()!
-        let model = LoginResponse(yaml: response)
+        let xml = SWXMLHash.parse(success)
+        let model = LoginResponse(xml: xml)
         XCTAssertNotNil(model)
         
         guard let checked = model else {
@@ -37,13 +41,16 @@ class LoginResponseTests: XCTestCase {
     }
     
     func testAuthFailureResonse() {
-        let failure = [
-            "---",
-            ":error: Authentication failed"
-        ].joined(separator: "\n")
+        let failure =
+        """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <errors>
+            <error>Authentication failed</error>
+        </errors>
+        """
 
-        let response = YAMLResponse(data: failure.data(using: .utf8)!).parse() as! [String: AnyObject]
-        XCTAssertTrue(response.containsError())
-        XCTAssertEqual("Authentication failed", response.errorMessage())
+        let xml = SWXMLHash.parse(failure)
+        XCTAssertTrue(xml.containsError)
+        XCTAssertEqual("Authentication failed", xml.errorMessage)
     }
 }

@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import SWXMLHash
 
 public enum LoginResult {
     case success(Int, String)
@@ -66,16 +67,14 @@ internal class LoginRequestBody: RequestBody, Dependencies {
 internal struct LoginResponse: RemoteModel {
     let userId: Int
     let token: String
-    init?(yaml: AnyObject) {
-        guard let body = yaml as? [String: AnyObject] else {
+    init?(xml: XMLIndexer) {
+        let response = xml["response"]
+        
+        guard let token = response["access-token"].element?.text else {
             return nil
         }
         
-        guard let token = body.string(for: "access_token") else {
-            return nil
-        }
-        
-        guard let user = body.int(for: "user_id") else {
+        guard let string = response["user-id"].element?.text, let user = Int(string) else {
             return nil
         }
         

@@ -16,29 +16,37 @@
 
 import XCTest
 @testable import SlimTimerAPI
+import SWXMLHash
 
 class TaskYAMLParseTests: XCTestCase {
     func testTaskParse() {
-        let input = [
-            "coworkers: []",
-            "",
-            "name: Game development",
-            "created_at: 2015-03-07 13:19:14.078997 Z",
-            "completed_on:",
-            "owners:",
-            "- name: Apple",
-            "  user_id: 119695",
-            "  email: cc@cc.com",
-            "updated_at: 2015-03-12 13:19:14.078997 Z",
-            "role: owner",
-            "tags: apps,ios",
-            "id: 2536931",
-            "reporters: []",
-            "",
-            "hours: 1.02"
-        ].dict()
+        let text =
+        """
+          <task>
+            <coworkers>
+            </coworkers>
+            <name>Game development</name>
+            <created-at type="datetime">2015-03-07T13:19:14Z</created-at>
+            <completed-on nil="true"></completed-on>
+            <owners>
+              <person>
+                <name>Apple</name>
+                <user-id type="integer">119695</user-id>
+                <email>cc@cc.com</email>
+              </person>
+            </owners>
+            <updated-at type="datetime">2015-03-12T13:19:14Z</updated-at>
+            <role>owner</role>
+            <tags>apps,ios</tags>
+            <id type="integer">2536931</id>
+            <reporters>
+            </reporters>
+            <hours type="float">1.02</hours>
+          </task>
+        """
+        let xml = SWXMLHash.parse(text)
         
-        guard let task = Task(yaml: input as AnyObject) else {
+        guard let task = Task(xml: xml) else {
             XCTAssertFalse(true)
             return
         }

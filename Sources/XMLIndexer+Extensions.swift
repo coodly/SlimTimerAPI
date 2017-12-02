@@ -17,6 +17,12 @@
 import Foundation
 import SWXMLHash
 
-protocol RemoteModel {
-    init?(xml: XMLIndexer)
+internal extension XMLIndexer {
+    var containsError: Bool {
+        return errorMessage != nil
+    }
+    
+    var errorMessage: String? {
+        return self["errors"]["error"].all.first?.element?.text
+    }
 }

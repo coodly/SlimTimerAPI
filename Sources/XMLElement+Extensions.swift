@@ -17,6 +17,22 @@
 import Foundation
 import SWXMLHash
 
-protocol RemoteModel {
-    init?(xml: XMLIndexer)
+
+private extension DateFormatter {
+    static let xmlDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
+}
+
+internal extension SWXMLHash.XMLElement {
+    var date: Date? {
+        return DateFormatter.xmlDate.date(from: text)
+    }
+    
+    var double: Double? {
+        return Double(text)
+    }
 }

@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import SWXMLHash
 
 public struct Task {
     public let name: String
@@ -27,33 +28,31 @@ public struct Task {
 }
 
 extension Task: RemoteModel {
-    init?(yaml: AnyObject) {
-        guard let data = yaml as? [String: AnyObject] else {
+    init?(xml: XMLIndexer) {
+        let task = xml["task"]
+        
+        guard let name = task["name"].element?.text else {
             return nil
         }
         
-        guard let name = data.string(for: "name") else {
-            return nil
-        }
-        
-        guard let createdAt = data.date(for: "created_at") else {
+        guard let createdAt = task["created-at"].element?.date else {
             return nil
         }
 
-        completedOn = data.date(for: "completed_on")
+        completedOn = task["completed-on"].element?.date
         
-        guard let updatedAt = data.date(for: "updated_at") else {
+        guard let updatedAt = task["updated-at"].element?.date else {
             return nil
         }
         
-        let tagsString = data.string(for: "tags") ?? ""
+        let tagsString = task["tags"].element?.text ?? ""
         tags = tagsString.components(separatedBy: ",")
         
-        guard let id = data.int(for: "id") else {
+        guard let idString = task["id"].element?.text, let id = Int(idString) else {
             return nil
         }
         
-        hours = data.double(for: "hours") ?? 0
+        hours = task["hours"].element?.double ?? 0
         
         self.name = name
         self.createdAt = createdAt
