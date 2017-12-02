@@ -19,7 +19,7 @@ class EntrySaveBodyTests: XCTestCase {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
             "<request>",
                 "<time-entry>",
-                    "<duration-in-seconds>12</duration-in-seconds>",
+                    "<duration-in-seconds>60</duration-in-seconds>",
                     "<end-time>2017-12-12T12:12:24Z</end-time>",
                     "<in-progress>false</in-progress>",
                     "<start-time>2017-12-12T12:12:12Z</start-time>",

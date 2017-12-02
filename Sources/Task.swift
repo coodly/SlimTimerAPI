@@ -67,3 +67,4 @@ extension Task: RemoteModel {
         self.id = id
     }
 }
+

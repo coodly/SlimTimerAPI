@@ -26,7 +26,7 @@ public enum ListTasksResult {
 private let ListTasksPathBase = "/users/%@/tasks"
 
 internal class ListTasksRequest: NetworkRequest<Tasks>, AuthenticatedRequest, UserIdConsumer {
-    var resultHandler: ((ListTasksResult) -> Void)!
+    internal var resultHandler: ((ListTasksResult) -> Void)!
     
     var userId: Int!
     

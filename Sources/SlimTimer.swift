@@ -55,4 +55,13 @@ public extension SlimTimer { // MARK: tasks
         inject(into: request)
         request.execute()
     }
+    
+    public func save(entry: Entry, completion: @escaping ((SaveEntryResult) -> Void)) {
+        Logging.log("Save \(entry)")
+        
+        let request = SaveEntryRequest(entry: entry)
+        request.resultHandler = completion
+        inject(into: request)
+        request.execute()
+    }
 }

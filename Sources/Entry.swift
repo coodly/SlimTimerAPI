@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import SWXMLHash
 
 public struct Entry {
     public let id: Int?
@@ -25,6 +26,7 @@ public struct Entry {
     public let comments: String?
     public let durationInSeconds: Int
     public let inProgress: Bool
+    public let task: Task?
 }
 
 public extension Entry {
@@ -36,12 +38,53 @@ public extension Entry {
         self.tags = tags
         self.comments = comments
         self.inProgress = endTime == nil
+        task = nil
         
         let end = endTime ?? Date()
-        durationInSeconds = Int(end.timeIntervalSince(startTime))
+        durationInSeconds = max(Int(end.timeIntervalSince(startTime)), 60)
     }
 }
 
 extension Entry: RequestBody {
     
+}
+
+extension Entry: RemoteModel {
+    init?(xml: XMLIndexer) {
+        let entry = xml["time-entry"]
+        
+        guard let idString = entry["id"].element?.text, let id = Int(idString) else {
+            return nil
+        }
+        
+        guard let start = entry["start-time"].element?.date else {
+            return nil
+        }
+        
+        let taskData = entry["task"]
+        guard let task = Task(xml: taskData) else {
+            return nil
+        }
+        
+        self.id = id
+        self.startTime = start
+        self.task = task
+        self.taskId = task.id
+        
+        tags = (entry["tags"].element?.text ?? "").components(separatedBy: ",")
+        comments = entry["comments"].element?.text ?? ""
+
+        inProgress = entry["in-progress"].element?.bool ?? false
+
+        let endTime = entry["end-time"].element?.date
+
+        let end = endTime ?? Date()
+        durationInSeconds = Int(end.timeIntervalSince(start))
+        
+        if inProgress {
+            self.endTime = nil
+        } else {
+            self.endTime = endTime
+        }
+    }
 }

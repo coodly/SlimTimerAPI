@@ -35,4 +35,8 @@ internal extension SWXMLHash.XMLElement {
     var double: Double? {
         return Double(text)
     }
+    
+    var bool: Bool {
+        return Bool(text) ?? false
+    }
 }

@@ -17,9 +17,10 @@
 import Foundation
 import SWXMLHash
 
-private enum Method: String {
+internal enum Method: String {
     case POST
     case GET
+    case PUT
 }
 
 
@@ -56,7 +57,7 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
         executeMethod(.POST, path: path, body: body)
     }
     
-    private func executeMethod(_ method: Method, path: String, body: RequestBody?, params: [String: AnyObject]? = nil) {
+    internal func executeMethod(_ method: Method, path: String, body: RequestBody?, params: [String: AnyObject]? = nil) {
         if var consumer = body as? APIKeyConsumer {
             consumer.apiKey = apiKey
         }
@@ -91,9 +92,11 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
 
         request.addValue("application/xml", forHTTPHeaderField: "Accept")
         
-        if let data = body?.generate().data(using: .utf8) {
+        if let string = body?.generate(), let data = string.data(using: .utf8) {
             request.httpBody = data
             request.addValue("application/xml", forHTTPHeaderField: "Content-Type")
+            
+            Logging.log("Body\n\(string)")
         }
         
         fetch.fetch(request: request as URLRequest) {
