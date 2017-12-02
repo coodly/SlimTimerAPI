@@ -122,7 +122,7 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             
             let xml = SWXMLHash.parse(data)
             
-            if let dict = body as? [String: AnyObject], let errorMessage = dict.errorMessage() {
+            if let errorMessage = xml.errorMessage {
                 error = .server(errorMessage)
                 return
             }
