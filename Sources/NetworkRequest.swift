@@ -23,7 +23,6 @@ internal enum Method: String {
     case PUT
 }
 
-
 public enum SlimTimerError: Error {
     case noData
     case network(Error)
@@ -34,6 +33,15 @@ public enum SlimTimerError: Error {
 internal struct NetworkResult<T: RemoteModel> {
     var value: T?
     let error: SlimTimerError?
+}
+
+private extension DateFormatter {
+    static let paramDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
 }
 
 private let ServerAPIURLString = "http://slimtimer.com"
@@ -73,15 +81,16 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             queryItems.append(URLQueryItem(name: "access_token", value: accessToken))
         }
         
-        if let params = params {
-            for (key, value) in params {
-                if let number = value as? Int {
-                    let used = String(describing: number)
-                    queryItems.append(URLQueryItem(name: key, value: used))
-                }
+        for (key, value) in params ?? [:] {
+            if let number = value as? Int {
+                let used = String(describing: number)
+                queryItems.append(URLQueryItem(name: key, value: used))
+            } else if let date = value as? Date {
+                let dateString = DateFormatter.paramDateFormatter.string(from: date)
+                queryItems.append(URLQueryItem(name: key, value: dateString))
             }
         }
-        
+
         components.queryItems = queryItems
         
         let requestURL = components.url!

@@ -51,7 +51,14 @@ extension Entry: RequestBody {
 
 extension Entry: RemoteModel {
     init?(xml: XMLIndexer) {
-        let entry = xml["time-entry"]
+        //TODO jaanus: figure this out
+        let entry: XMLIndexer
+        switch xml["time-entry"] {
+        case .xmlError(_):
+            entry = xml
+        default:
+            entry = xml["time-entry"]
+        }
         
         guard let idString = entry["id"].element?.text, let id = Int(idString) else {
             return nil

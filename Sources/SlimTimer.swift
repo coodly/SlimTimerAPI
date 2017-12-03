@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import Foundation
+
 public class SlimTimer {
     private let apiKey: String
     private let userId: Int
@@ -55,11 +57,23 @@ public extension SlimTimer { // MARK: tasks
         inject(into: request)
         request.execute()
     }
-    
+}
+
+public extension SlimTimer { // MARK: entries
     public func save(entry: Entry, completion: @escaping ((SaveEntryResult) -> Void)) {
         Logging.log("Save \(entry)")
         
         let request = SaveEntryRequest(entry: entry)
+        request.resultHandler = completion
+        inject(into: request)
+        request.execute()
+    }
+    
+    @available(OSX 10.12, iOS 10, *)
+    public func loadEntries(in range: DateInterval, offset: Int = 0, completion: @escaping ((ListEntriesResult) -> Void)) {
+        Logging.log("Load entries in \(range)")
+        
+        let request = LoadEntriesRequest(interval: range, offset: offset)
         request.resultHandler = completion
         inject(into: request)
         request.execute()
