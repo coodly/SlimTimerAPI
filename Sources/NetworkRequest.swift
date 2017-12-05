@@ -95,6 +95,8 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
         
         let requestURL = components.url!
         let request = NSMutableURLRequest(url: requestURL)
+        request.httpShouldHandleCookies = false
+        
         request.httpMethod = method.rawValue
         
         Logging.log("\(method) to \(requestURL.absoluteString)")
