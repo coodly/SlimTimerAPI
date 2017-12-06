@@ -18,6 +18,12 @@ import Foundation
 
 private let MaxTasksPerPage = 50
 
+public enum ShowCompleted: String {
+    case yes
+    case no
+    case only
+}
+
 public enum ListTasksResult {
     case success([Task], Bool, Int)
     case failure(SlimTimerError)
@@ -31,14 +37,16 @@ internal class ListTasksRequest: NetworkRequest<Tasks>, AuthenticatedRequest, Us
     var userId: Int!
     
     private let offset: Int
-    init(offset: Int) {
+    private let showCompleted: ShowCompleted
+    init(offset: Int, showCompleted: ShowCompleted) {
         self.offset = offset
+        self.showCompleted = showCompleted
     }
     
     override func performRequest() {
         let path = String(format: ListTasksPathBase, NSNumber(value: userId))
         
-        GET(path, params: ["offset": offset as AnyObject])
+        GET(path, params: ["offset": offset as AnyObject, "show_completed": showCompleted.rawValue as AnyObject])
     }
     
     override func handle(result: NetworkResult<Tasks>) {

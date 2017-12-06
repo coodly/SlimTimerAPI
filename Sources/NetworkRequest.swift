@@ -88,6 +88,8 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             } else if let date = value as? Date {
                 let dateString = DateFormatter.paramDateFormatter.string(from: date)
                 queryItems.append(URLQueryItem(name: key, value: dateString))
+            } else if let string = value as? String {
+                queryItems.append(URLQueryItem(name: key, value: string))
             }
         }
 
