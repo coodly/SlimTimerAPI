@@ -39,7 +39,6 @@ private extension DateFormatter {
     static let paramDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter
     }()
 }

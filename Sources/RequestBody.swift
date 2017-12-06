@@ -32,7 +32,6 @@ private extension DateFormatter {
     static let xmlDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         return formatter
     }()
 }
