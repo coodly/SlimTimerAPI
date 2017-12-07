@@ -27,6 +27,7 @@ public struct Entry {
     public let durationInSeconds: Int
     public let inProgress: Bool
     public let task: Task?
+    public let updatedAt: Date?
 }
 
 public extension Entry {
@@ -39,6 +40,7 @@ public extension Entry {
         self.comments = comments
         self.inProgress = endTime == nil
         task = nil
+        updatedAt = nil
         
         let end = endTime ?? Date()
         durationInSeconds = max(Int(end.timeIntervalSince(startTime)), 60)
@@ -87,6 +89,8 @@ extension Entry: RemoteModel {
 
         let end = endTime ?? Date()
         durationInSeconds = Int(end.timeIntervalSince(start))
+        
+        updatedAt = entry["updated-at"].element?.date
         
         if inProgress {
             self.endTime = nil
