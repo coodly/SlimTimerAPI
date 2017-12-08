@@ -21,6 +21,7 @@ internal enum Method: String {
     case POST
     case GET
     case PUT
+    case DELETE
 }
 
 public enum SlimTimerError: Error {
@@ -63,7 +64,15 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
     func POST(_ path: String, body: RequestBody) {
         executeMethod(.POST, path: path, body: body)
     }
-    
+
+    func PUT(_ path: String, body: RequestBody) {
+        executeMethod(.PUT, path: path, body: body)
+    }
+
+    func DELETE(_ path: String) {
+        executeMethod(.DELETE, path: path, body: nil)
+    }
+
     internal func executeMethod(_ method: Method, path: String, body: RequestBody?, params: [String: AnyObject]? = nil) {
         if var consumer = body as? APIKeyConsumer {
             consumer.apiKey = apiKey
@@ -113,6 +122,9 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
         
         fetch.fetch(request: request as URLRequest) {
             data, response, networkError in
+
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+            Logging.log("Status code: \(statusCode)")
             
             if let data = data, let string = String(data: data, encoding: .utf8) {
                 Logging.log("Response:\n\(string)")
@@ -127,6 +139,11 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             
             if let remoteError = networkError  {
                 error = .network(remoteError)
+                return
+            }
+            
+            if Model.self is EmptySuccessResponse.Type, statusCode == 200 {
+                value = EmptySuccessResponse() as? Model
                 return
             }
             
