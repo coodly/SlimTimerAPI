@@ -34,7 +34,13 @@ internal class DeleteEntryRequest: NetworkRequest<EmptySuccessResponse>, UserIdC
     }
     
     override func performRequest() {
-        let path = String(format: DeleteEntryPathBase, NSNumber(value: userId), NSNumber(value: entry.id!))
+        guard let entryId = entry.id else {
+            Logging.log("Trying to delete entry that was not created remotely. Just report that it's deleted")
+            resultHandler?(.success)
+            return
+        }
+        
+        let path = String(format: DeleteEntryPathBase, NSNumber(value: userId), NSNumber(value: entryId))
         DELETE(path)
     }
     
