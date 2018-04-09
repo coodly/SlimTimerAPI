@@ -23,6 +23,6 @@ internal struct Tasks: RemoteModel {
     init?(xml: XMLIndexer) {
         let tasks = xml["tasks"]
         
-        self.tasks = tasks["task"].all.flatMap({ Task(xml: $0) })
+        self.tasks = tasks["task"].all.compactMap({ Task(xml: $0) })
     }
 }

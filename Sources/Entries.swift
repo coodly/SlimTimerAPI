@@ -23,6 +23,6 @@ internal struct Entries: RemoteModel {
     init?(xml: XMLIndexer) {
         let entries = xml["time-entries"]
         
-        self.entries = entries["time-entry"].all.flatMap({ Entry(xml: $0) })
+        self.entries = entries["time-entry"].all.compactMap({ Entry(xml: $0) })
     }
 }
