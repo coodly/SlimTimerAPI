@@ -29,9 +29,9 @@ class EntrySaveBodyTests: XCTestCase {
             "<request>",
                 "<time-entry>",
                     "<duration-in-seconds>60</duration-in-seconds>",
-                    "<end-time>2017-12-12T12:12:24Z</end-time>",
+                    "<end-time>2017-12-12T14:12:24Z</end-time>",
                     "<in-progress>false</in-progress>",
-                    "<start-time>2017-12-12T12:12:12Z</start-time>",
+                    "<start-time>2017-12-12T14:12:12Z</start-time>",
                     "<task-id>123</task-id>",
                 "</time-entry>",
             "</request>"
@@ -52,14 +52,38 @@ class EntrySaveBodyTests: XCTestCase {
                 "<time-entry>",
                     "<comments>The commentator</comments>",
                     "<duration-in-seconds>120</duration-in-seconds>",
-                    "<end-time>2017-12-13T14:17:16Z</end-time>",
+                    "<end-time>2017-12-13T16:17:16Z</end-time>",
                     "<in-progress>false</in-progress>",
-                    "<start-time>2017-12-13T14:15:16Z</start-time>",
+                    "<start-time>2017-12-13T16:15:16Z</start-time>",
                     "<tags>bake,cake,shake</tags>",
                     "<task-id>124</task-id>",
                 "</time-entry>",
             "</request>"
         ].joined()
+        
+        XCTAssertEqual(expected, body.generate())
+    }
+
+    func testAllValuesPresentInSummerTime() {
+        let start = Date.dateOn(year: 2018, month: 4, day: 5, hours: 6, minutes: 7, seconda: 8)
+        let end = start.addingTimeInterval(120)
+        let entry = Entry(id: 321, startTime: start, endTime: end, taskId: 124, tags: ["cake", "shake", "bake"], comments: "The commentator")
+        let body = EntrySaveBody(entry: entry)
+        
+        let expected = [
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+            "<request>",
+            "<time-entry>",
+            "<comments>The commentator</comments>",
+            "<duration-in-seconds>120</duration-in-seconds>",
+            "<end-time>2018-04-05T09:09:08Z</end-time>",
+            "<in-progress>false</in-progress>",
+            "<start-time>2018-04-05T09:07:08Z</start-time>",
+            "<tags>bake,cake,shake</tags>",
+            "<task-id>124</task-id>",
+            "</time-entry>",
+            "</request>"
+            ].joined()
         
         XCTAssertEqual(expected, body.generate())
     }
