@@ -47,6 +47,10 @@ internal class DeleteEntryRequest: NetworkRequest<EmptySuccessResponse>, UserIdC
     override func handle(result: NetworkResult<EmptySuccessResponse>) {
         if result.value?.success ?? false {
             resultHandler?(.success)
+        } else if result.statusCode == 404 {
+            //TODO jaanus: check this. Trying to delete already deleted entry?
+            Logging.log("Got HTTP 404. No entry with given id")
+            resultHandler?(.success)
         } else {
             resultHandler?(.failure(result.error ?? .unknown))
         }

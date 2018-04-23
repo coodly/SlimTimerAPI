@@ -33,6 +33,7 @@ public enum SlimTimerError: Error {
 
 internal struct NetworkResult<T: RemoteModel> {
     var value: T?
+    let statusCode: Int
     let error: SlimTimerError?
 }
 
@@ -134,7 +135,7 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             var error: SlimTimerError?
             
             defer {
-                self.handle(result: NetworkResult(value: value, error: error))
+                self.handle(result: NetworkResult(value: value, statusCode: statusCode, error: error))
             }
             
             if let remoteError = networkError  {
