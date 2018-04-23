@@ -23,7 +23,7 @@ public struct Task {
     public let completedOn: Date?
     public let updatedAt: Date
     public let tags: [String]
-    public let id: Int
+    public let id: Int?
     public let hours: Double
 }
 

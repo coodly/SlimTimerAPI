@@ -78,7 +78,7 @@ extension Entry: RemoteModel {
         self.id = id
         self.startTime = start
         self.task = task
-        self.taskId = task.id
+        self.taskId = task.id!
         
         tags = (entry["tags"].element?.text ?? "").components(separatedBy: ",")
         comments = entry["comments"].element?.text ?? ""

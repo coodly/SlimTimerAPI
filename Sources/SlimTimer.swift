@@ -57,6 +57,13 @@ public extension SlimTimer { // MARK: tasks
         inject(into: request)
         request.execute()
     }
+
+    public func delete(task: Task, completion: @escaping ((DeleteTaskResult) -> Void)) {
+        let request = DeleteTaskRequest(task: task)
+        request.resultHandler = completion
+        inject(into: request)
+        request.execute()
+    }
 }
 
 public extension SlimTimer { // MARK: entries
