@@ -27,6 +27,18 @@ public struct Task {
     public let hours: Double
 }
 
+public extension Task {
+    public init(id: Int?, name: String, createdAt: Date, completedOn: Date?, tags: [String]) {
+        self.id = id
+        self.name = name
+        self.createdAt = createdAt
+        self.completedOn = completedOn
+        self.tags = tags
+        self.updatedAt = Date()
+        self.hours = 0
+    }
+}
+
 extension Task: RemoteModel {
     init?(xml: XMLIndexer) {
         //TODO jaanus: figure this out
