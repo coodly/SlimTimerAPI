@@ -28,6 +28,7 @@ private let Normalizations = [
     "completedOn": "completed_on"
 ]
 private let Filtered = ["id", "updatedAt", "createdAt"]
+private let SendNullAsEmpty = ["completedOn"]
 
 private extension DateFormatter {
     static let xmlDateFormatter: DateFormatter = {
@@ -91,6 +92,8 @@ internal extension RequestBody {
                 value = DateFormatter.xmlDateFormatter.string(from: date) as AnyObject
             } else if let tags = child.value as? [String] {
                 value = tags.sorted().joined(separator: ",") as AnyObject
+            } else if SendNullAsEmpty.contains(name) {
+                value = "" as AnyObject
             } else {
                 continue
             }
