@@ -24,9 +24,10 @@ private let Normalizations = [
     "durationInSeconds": "duration-in-seconds",
     "taskId": "task-id",
     "endTime": "end-time",
-    "startTime": "start-time"
+    "startTime": "start-time",
+    "completedOn": "completed_on"
 ]
-private let Filtered = ["id"]
+private let Filtered = ["id", "updatedAt", "createdAt"]
 
 private extension DateFormatter {
     static let xmlDateFormatter: DateFormatter = {

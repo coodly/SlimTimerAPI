@@ -39,6 +39,10 @@ public extension Task {
     }
 }
 
+extension Task: RequestBody {
+    
+}
+
 extension Task: RemoteModel {
     init?(xml: XMLIndexer) {
         //TODO jaanus: figure this out
