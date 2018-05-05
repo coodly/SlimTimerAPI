@@ -101,4 +101,11 @@ public extension SlimTimer { // MARK: entries
         inject(into: request)
         request.execute()
     }
+    
+    public func detailsFor(entry id: Int, completion: @escaping ((EntryDetailsResult) -> Void)) {
+        let request = EntryDetailsRequest(entryId: id)
+        request.resultHandler = completion
+        inject(into: request)
+        request.execute()
+    }
 }
