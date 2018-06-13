@@ -38,4 +38,8 @@ internal extension SWXMLHash.XMLElement {
     var bool: Bool {
         return Bool(text) ?? false
     }
+    
+    var int: Int? {
+        return Int(text)
+    }
 }

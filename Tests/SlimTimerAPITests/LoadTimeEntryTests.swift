@@ -24,10 +24,10 @@ class LoadTimeEntryTests: XCTestCase {
         """
         <?xml version="1.0" encoding="UTF-8"?>
         <time-entry>
-          <end-time type="datetime">2017-12-02T14:32:49Z</end-time>
-          <created-at type="datetime">2017-12-02T14:32:51Z</created-at>
+          <end-time type="datetime">2018-02-01T14:32:49Z</end-time>
+          <created-at type="datetime">2016-01-02T14:32:51Z</created-at>
           <comments nil="true"></comments>
-          <updated-at type="datetime">2017-12-02T14:32:51Z</updated-at>
+          <updated-at type="datetime">2015-06-07T14:32:51Z</updated-at>
           <tags></tags>
           <id type="integer">34493431</id>
           <duration-in-seconds type="integer">93346</duration-in-seconds>
@@ -64,7 +64,9 @@ class LoadTimeEntryTests: XCTestCase {
             return
         }
         
-        XCTAssertNil(entry.endTime)
+        XCTAssertTrue(entry.createdAt?.isOn(year: 2016, month: 1, day: 2) ?? false)
+        XCTAssertTrue(entry.endTime?.isOn(year: 2018, month: 2, day: 1) ?? false)
+        XCTAssertTrue(entry.updatedAt?.isOn(year: 2015, month: 6, day: 7) ?? false)
         XCTAssertTrue(entry.startTime.isOn(year: 2017, month: 12, day: 1))
         XCTAssertEqual(34493431, entry.id ?? 0)
         XCTAssertEqual(93346, entry.durationInSeconds)
