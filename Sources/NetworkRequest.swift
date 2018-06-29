@@ -31,6 +31,8 @@ public enum SlimTimerError: Error {
     case unknown
 }
 
+private let ServerErrorRange = IndexSet(integersIn: 500..<600)
+
 internal struct NetworkResult<T: RemoteModel> {
     var value: T?
     let statusCode: Int
@@ -140,6 +142,11 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             
             if let remoteError = networkError  {
                 error = .network(remoteError)
+                return
+            }
+            
+            if ServerErrorRange.contains(statusCode) {
+                error = .server("Status code \(statusCode)")
                 return
             }
             
