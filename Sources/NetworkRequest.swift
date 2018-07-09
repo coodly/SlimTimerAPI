@@ -145,11 +145,6 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
                 return
             }
             
-            if ServerErrorRange.contains(statusCode) {
-                error = .server("Status code \(statusCode)")
-                return
-            }
-            
             if Model.self is EmptySuccessResponse.Type, statusCode == 200 {
                 value = EmptySuccessResponse() as? Model
                 return
@@ -164,6 +159,11 @@ internal class NetworkRequest<Model: RemoteModel>: Dependencies {
             
             if let errorMessage = xml.errorMessage {
                 error = .server(errorMessage)
+                return
+            }
+            
+            if ServerErrorRange.contains(statusCode) {
+                error = .server("Status code \(statusCode)")
                 return
             }
             
