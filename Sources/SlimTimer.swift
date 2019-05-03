@@ -48,7 +48,7 @@ public class SlimTimer {
     }
 }
 
-public extension SlimTimer { // MARK: tasks
+extension SlimTimer { // MARK: tasks
     public func fetchTasks(offset: Int = 0, showCompleted: ShowCompleted = .yes, completion: @escaping ((ListTasksResult) -> Void)) {
         Logging.log("Fetch tasks")
         
@@ -75,7 +75,7 @@ public extension SlimTimer { // MARK: tasks
     }
 }
 
-public extension SlimTimer { // MARK: entries
+extension SlimTimer { // MARK: entries
     public func save(entry: Entry, completion: @escaping ((SaveEntryResult) -> Void)) {
         Logging.log("Save \(entry)")
         

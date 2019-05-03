@@ -31,7 +31,7 @@ public struct Entry {
     public let createdAt: Date?
 }
 
-public extension Entry {
+extension Entry {
     public init(id: Int?, startTime: Date, endTime: Date?, taskId: Int, tags: [String]?, comments: String?) {
         self.id = id
         self.startTime = startTime

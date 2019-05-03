@@ -27,7 +27,7 @@ public struct Task {
     public let hours: Double
 }
 
-public extension Task {
+extension Task {
     public init(id: Int?, name: String, createdAt: Date, completedOn: Date?, tags: [String]) {
         self.id = id
         self.name = name
