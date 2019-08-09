@@ -47,7 +47,7 @@ internal struct XmlNode {
         result.append("<\(name)>")
         
         if let string = value as? String {
-            result.append(string.replacingOccurrences(of: "&", with: "&amp;"))
+            result.append(string.replacingOccurrences(of: "&", with: "&#038;"))
         } else if let nodes = value as? [XmlNode] {
             for node in nodes {
                 result.append(contentsOf: node.lines())
