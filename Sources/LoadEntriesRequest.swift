@@ -17,6 +17,7 @@
 import Foundation
 
 private let ListEntriesPathBase = "/users/%@/time_entries"
+private let ListTaskEntriesPathBase = "/users/%@/tasks/%@/time_entries"
 
 private let EntriesPageSize = 5000
 
@@ -33,13 +34,20 @@ internal class LoadEntriesRequest: NetworkRequest<Entries>, AuthenticatedRequest
 
     private let interval: DateInterval
     private let offset: Int
-    init(interval: DateInterval, offset: Int) {
+    private let task: Task?
+    init(interval: DateInterval, task: Task?, offset: Int) {
         self.interval = interval
         self.offset = offset
+        self.task = task
     }
     
     override func performRequest() {
-        let path = String(format: ListEntriesPathBase, NSNumber(value: userId))
+        let path: String
+        if let taskId = task?.id {
+            path = String(format: ListTaskEntriesPathBase, NSNumber(value: userId), NSNumber(value: taskId))
+        } else {
+            path = String(format: ListEntriesPathBase, NSNumber(value: userId))
+        }
         GET(path, params: ["range_start": interval.start as AnyObject, "range_end": interval.end as AnyObject, "offset": offset as AnyObject])
     }
     

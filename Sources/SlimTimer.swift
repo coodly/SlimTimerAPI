@@ -86,10 +86,10 @@ extension SlimTimer { // MARK: entries
     }
     
     @available(OSX 10.12, iOS 10, *)
-    public func loadEntries(in range: DateInterval, offset: Int = 0, completion: @escaping ((ListEntriesResult) -> Void)) {
+    public func loadEntries(in range: DateInterval, for task: Task? = nil, offset: Int = 0, completion: @escaping ((ListEntriesResult) -> Void)) {
         Logging.log("Load entries in \(range)")
         
-        let request = LoadEntriesRequest(interval: range, offset: offset)
+        let request = LoadEntriesRequest(interval: range, task: task, offset: offset)
         request.resultHandler = completion
         inject(into: request)
         request.execute()
