@@ -13,5 +13,6 @@ Pod::Spec.new do |s|
 
   s.requires_arc = true
 
+
   s.dependency 'SWXMLHash', '4.9.0'
 end
