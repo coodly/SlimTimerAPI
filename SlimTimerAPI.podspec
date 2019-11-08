@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'SlimTimerAPI'
-  s.version = '0.1.2'
+  s.version = '0.1.3'
   s.license = 'Apache 2'
   s.summary = 'SlimTimer API in Swift'
   s.homepage = 'https://github.com/coodly/SlimTimerAPI'
